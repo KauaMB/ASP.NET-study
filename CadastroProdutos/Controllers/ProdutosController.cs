@@ -1,3 +1,5 @@
+using CadastroProdutos.Models;
+using CadastroProdutos.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -8,18 +10,12 @@ namespace CadastroProdutos.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private static List<Produto> produtos = new List<Produto>
-        {
-         new Produto() {Id = 1, Nome = "Mouse", Preco = 99.90m, Estoque = 50},
-         new Produto() {Id = 2, Nome = "Teclado", Preco = 249.90m, Estoque = 30}
-        };
+        ProdutosServices produtosServices = new();
 
         [HttpGet]
         public ActionResult<List<Produto>> Get()
         {
-            return Ok(produtos);
-
-
+            return Ok(produtosServices.BuscarTodos());
         }
 
 
@@ -27,46 +23,38 @@ namespace CadastroProdutos.Controllers
         [HttpGet("{id}")]
         public ActionResult<List<Produto>> BuscarPorId(int id)
         {
-            var produto = produtos.Find(item => item.Id == id);
+            var resultado = produtosServices.BuscarPorId(id);
 
-            if (produto is null)
-            {
-                return NotFound($"O item de id {id} não foi encontrado");
-            }
+            if (resultado == null) return NotFound("O item no id especificado não existe");
 
-            return Ok(produto);
+            return Ok(resultado);
         }
 
         [HttpPost]
         public ActionResult<Produto> AdicionarProduto(Produto novoProduto)
         {
-            produtos.Add(novoProduto);
+            produtosServices.AdicionarProduto(novoProduto);
             return Created();
         }
 
         [HttpPut("{id}")]
         public ActionResult AtualizarProduto(Produto produtoAtualizado, int id)
         {
-            var atualizador = produtos.Find(item => item.Id == id);
+            var produtoModificado = produtosServices.AtualizarProduto(id, produtoAtualizado);
 
-            atualizador.Nome = produtoAtualizado.Nome;
-            atualizador.Estoque = produtoAtualizado.Estoque;
-            atualizador.Preco = produtoAtualizado.Preco;
+            if (produtoModificado is null) return NotFound("O id especificado é inexistente");
 
-            return Ok(atualizador);
+            return Ok(produtoAtualizado);
         }
 
         [HttpDelete("{id}")]
         public ActionResult DeletarProduto(int id)
         {
-            var produtoDeletado = produtos.Find(item => item.Id == id);
+            var resultado = produtosServices.DeletarProduto(id);
 
-            if (produtoDeletado is null)
-                return NotFound("Produto não encontrado");
+            if (resultado is null) return NotFound("O id especificado é inexistente");
 
-            produtos.Remove(produtoDeletado);
-
-            return NoContent();
+            return Ok(resultado);
         }
     }
 }
