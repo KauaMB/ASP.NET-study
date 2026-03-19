@@ -4,7 +4,7 @@ using Microsoft.VisualBasic;
 
 namespace CadastroProdutos.Services;
 
-public class ProdutosServices
+public class ProdutosServices : IProdutosServices
 {
 
     private static List<Produto> produtos = new List<Produto>
@@ -42,7 +42,7 @@ public class ProdutosServices
     }
 
     public Produto? DeletarProduto(int id)
-    {
+    { 
         var produtoDeletado = produtos.Find(item => item.Id == id);
 
         if (produtoDeletado is null) return produtoDeletado;
