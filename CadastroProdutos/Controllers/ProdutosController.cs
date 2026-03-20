@@ -10,12 +10,17 @@ namespace CadastroProdutos.Controllers
     [ApiController]
     public class ProdutosController : ControllerBase
     {
-        private IProdutosServices produtosServices = new ProdutosServices();
+        private IProdutosServices ProdutosServices;
+
+        public ProdutosController(IProdutosServices produtosServices)
+        {
+            ProdutosServices = produtosServices;
+        }
 
         [HttpGet]
         public ActionResult<List<Produto>> Get()
         {
-            return Ok(produtosServices.BuscarTodos());
+            return Ok(ProdutosServices.BuscarTodos());
         }
 
 
@@ -23,7 +28,7 @@ namespace CadastroProdutos.Controllers
         [HttpGet("{id}")]
         public ActionResult<List<Produto>> BuscarPorId(int id)
         {
-            var resultado = produtosServices.BuscarPorId(id);
+            var resultado = ProdutosServices.BuscarPorId(id);
 
             if (resultado == null) return NotFound("O item no id especificado não existe");
 
@@ -33,14 +38,14 @@ namespace CadastroProdutos.Controllers
         [HttpPost]
         public ActionResult<Produto> AdicionarProduto(Produto novoProduto)
         {
-            produtosServices.AdicionarProduto(novoProduto);
+            ProdutosServices.AdicionarProduto(novoProduto);
             return Created();
         }
 
         [HttpPut("{id}")]
         public ActionResult AtualizarProduto(Produto produtoAtualizado, int id)
         {
-            var produtoModificado = produtosServices.AtualizarProduto(id, produtoAtualizado);
+            var produtoModificado = ProdutosServices.AtualizarProduto(id, produtoAtualizado);
 
             if (produtoModificado is null) return NotFound("O id especificado é inexistente");
 
@@ -50,7 +55,7 @@ namespace CadastroProdutos.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeletarProduto(int id)
         {
-            var resultado = produtosServices.DeletarProduto(id);
+            var resultado = ProdutosServices.DeletarProduto(id);
 
             if (resultado is null) return NotFound("O id especificado é inexistente");
 

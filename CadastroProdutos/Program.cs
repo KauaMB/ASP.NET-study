@@ -1,4 +1,5 @@
 using CadastroProdutos.Models;
+using CadastroProdutos.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<IProdutosServices, ProdutosServices>();
 
 var app = builder.Build();
 
