@@ -16,10 +16,10 @@ builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite("Data Source = Produtos.db"));
 
-builder.Services.AddScoped<IProdutosServices, ProdutosServices>();
+builder.Services.AddScoped<IProdutosServices, ProdutosDatabaseService>();
 
 var app = builder.Build();
-
+ 
 app.MapControllers();
 
 // Configure the HTTP request pipeline.

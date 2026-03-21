@@ -18,7 +18,7 @@ namespace CadastroProdutos.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Produto>> Get()
+        public ActionResult<List<Produto>> BuscarTodos()
         {
             return Ok(ProdutosServices.BuscarTodos());
         }

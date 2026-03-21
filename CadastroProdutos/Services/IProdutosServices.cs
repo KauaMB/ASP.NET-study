@@ -9,7 +9,7 @@ public interface IProdutosServices
 
     public Produto? BuscarPorId(int id);
 
-    public int AdicionarProduto(Produto novoProduto);
+    public void AdicionarProduto(Produto novoProduto);
 
     public Produto? AtualizarProduto(int id, Produto produtoAtualizado);
 

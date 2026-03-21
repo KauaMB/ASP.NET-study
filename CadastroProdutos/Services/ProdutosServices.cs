@@ -52,4 +52,8 @@ public class ProdutosServices : IProdutosServices
         return produtoDeletado;
     }
 
+    void IProdutosServices.AdicionarProduto(Produto novoProduto)
+    {
+        throw new NotImplementedException();
+    }
 }
