@@ -15,12 +15,16 @@ public class ProdutosDatabaseService : IProdutosServices
 
     public void AdicionarProduto(Produto novoProduto)
     {
+        ValidarProduto(novoProduto);
+
         Context.Produtos.Add(novoProduto);
         Context.SaveChanges();
     }
 
     public Produto? AtualizarProduto(int id, Produto produtoAtualizado)
     {   
+        ValidarProduto(produtoAtualizado);
+
         var produtoModificado = Context.Produtos.Find(id);
 
         if (produtoModificado is null) return null;
@@ -51,5 +55,17 @@ public class ProdutosDatabaseService : IProdutosServices
         Context.Produtos.Remove(produtoDeletado);
         Context.SaveChanges();
         return produtoDeletado;
+    }
+
+    public void ValidarProduto(Produto produto)
+    {
+        if (produto.Nome == "Produto Padrão")
+        {
+            throw new Exception($"O produto não pode ter o nome {produto.Nome}");
+        }
+        if (produto.Estoque >= 1000)
+        {
+            throw new Exception($"Não é possível ter mais de mil {produto.Nome} no estoque");
+        }
     }
 }
