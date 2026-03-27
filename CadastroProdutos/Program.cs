@@ -1,7 +1,12 @@
+using System.Linq.Expressions;
+using System.Text;
 using CadastroProdutos.Database;
 using CadastroProdutos.Models;
 using CadastroProdutos.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +15,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(x =>
+{
+    x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Description = @"Insira o JWT no campo abaixo usando o seguinte formato: Bearer {seu-token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    x.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("oauth2", document)] =
+         new List<string>()
+    });
+});
 
 builder.Services.AddControllers();
 
@@ -18,8 +39,29 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite
 
 builder.Services.AddScoped<IProdutosServices, ProdutosDatabaseService>();
 
+var jwtConfig = builder.Configuration.GetSection("Jwt");
+var key = Encoding.ASCII.GetBytes(jwtConfig["Key"]);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtConfig["Issuer"],
+        ValidAudience = jwtConfig["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+
 var app = builder.Build();
- 
+
+
 app.MapControllers();
 
 // Configure the HTTP request pipeline.
@@ -32,6 +74,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGet("/teste", () => "Esse é um endpoint de teste");
 
@@ -101,7 +146,7 @@ app.MapDelete("/produto/{id}", (int id) =>
         return Results.NoContent();
     }
 });
-    
+
 app.Run();
 
 record ProdutoDto(string Nome, decimal Preco, int Estoque);
