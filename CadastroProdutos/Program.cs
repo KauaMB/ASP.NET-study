@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen(x =>
 
     x.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-        [new OpenApiSecuritySchemeReference("oauth2", document)] =
+        [new OpenApiSecuritySchemeReference("Bearer", document)] =
          new List<string>()
     });
 });

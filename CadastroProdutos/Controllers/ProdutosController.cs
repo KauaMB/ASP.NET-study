@@ -1,11 +1,13 @@
 using CadastroProdutos.Models;
 using CadastroProdutos.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CadastroProdutos.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProdutosController : ControllerBase
@@ -35,6 +37,7 @@ namespace CadastroProdutos.Controllers
             return Ok(resultado);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public ActionResult<Produto> AdicionarProduto(Produto novoProduto)
         {
@@ -48,6 +51,7 @@ namespace CadastroProdutos.Controllers
             }
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public ActionResult AtualizarProduto(Produto produtoAtualizado, int id)
         {
@@ -64,6 +68,7 @@ namespace CadastroProdutos.Controllers
             }
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{id}")]
         public ActionResult DeletarProduto(int id)
         {
